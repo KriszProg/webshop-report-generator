@@ -1,11 +1,14 @@
 package hu.otpmobil.config;
 
+import java.time.format.DateTimeFormatter;
+
 public final class ApplicationConstants {
 
     private ApplicationConstants() {}
 
     // General constants
     public static final String BACKSLASH ="\\";
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
     public static final Integer NUMBER_OF_TOP_LIST_ELEMENTS = 2;
     public static final String REGEX_CUSTOMER_ID = "^A\\d{2}$";
     public static final String REGEX_WEB_SHOP_ID = "^WS\\d{2}$";

@@ -1,10 +1,15 @@
 package hu.otpmobil.service;
 
 import hu.otpmobil.data.DataStore;
+import hu.otpmobil.model.LineError;
 import hu.otpmobil.model.Payment;
 import hu.otpmobil.model.UniqueId;
+import hu.otpmobil.util.AppLogger;
+import hu.otpmobil.util.Message;
 import hu.otpmobil.util.Separator;
 import hu.otpmobil.validator.PaymentDataValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -12,16 +17,16 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.Collections;
 
-import static hu.otpmobil.config.ApplicationConstants.BACKSLASH;
+import static hu.otpmobil.config.ApplicationConstants.*;
 
 public class PaymentDataProcessorServiceImpl implements PaymentDataProcessorService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(PaymentDataProcessorServiceImpl.class);
     private final DataStore dataStore;
     private final PaymentDataValidator validator;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-    private List<UniqueId> uniqueIdList;
 
     public PaymentDataProcessorServiceImpl(PaymentDataValidator validator) {
         this.validator = validator;
@@ -30,7 +35,6 @@ public class PaymentDataProcessorServiceImpl implements PaymentDataProcessorServ
 
     @Override
     public void readAndProcessPaymentData(String filePath, Separator separator) {
-        initUniqueIdList();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath, StandardCharsets.UTF_8))) {
             String line;
             int lineNumber = 0;
@@ -39,12 +43,18 @@ public class PaymentDataProcessorServiceImpl implements PaymentDataProcessorServ
                 lineNumber++;
 
                 String fileName = extractFileName(filePath);
-                if (!validator.isPaymentDataValid(fileName, lineNumber, line, separator)) {
+                if (validator.isDataInvalid(fileName, lineNumber, line, separator,
+                        REQUIRED_AMOUNT_OF_PAYMENT_DATA_PER_LINE)) {
                     continue;
                 }
 
                 Payment payment = createPayment(line, separator);
-                if (!validator.isUniqueIdExists(fileName, lineNumber, line, payment.getUniqueId(), uniqueIdList)) {
+                if (!dataStore.isCustomerExistsByUniqueId(payment.getUniqueId())) {
+                    AppLogger.logLineError(LOGGER, new LineError()
+                            .fileName(fileName)
+                            .lineNumber(lineNumber)
+                            .lineContent(line)
+                            .errors(Collections.singletonList(Message.CUSTOMER_NOT_EXISTS.getMessage())));
                     continue;
                 }
 
@@ -53,10 +63,6 @@ public class PaymentDataProcessorServiceImpl implements PaymentDataProcessorServ
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void initUniqueIdList() {
-        this.uniqueIdList = dataStore.getUniqueIdList();
     }
 
     private String extractFileName(String filePath) {

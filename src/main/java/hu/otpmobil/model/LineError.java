@@ -46,10 +46,6 @@ public class LineError {
         return this;
     }
 
-    public void addError(String error) {
-        errors.add(error);
-    }
-
     @Override
     public String toString() {
         return "LineError{" +

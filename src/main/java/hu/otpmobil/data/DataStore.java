@@ -6,7 +6,6 @@ import hu.otpmobil.model.UniqueId;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class DataStore {
 
@@ -33,10 +32,9 @@ public class DataStore {
         return customers;
     }
 
-    public List<UniqueId> getUniqueIdList() {
+    public boolean isCustomerExistsByUniqueId(UniqueId uniqueId) {
         return customers.stream()
-                .map(Customer::getUniqueId)
-                .collect(Collectors.toList());
+                .anyMatch(customer -> uniqueId.equals(customer.getUniqueId()));
     }
 
     public void savePayment(Payment payment) {

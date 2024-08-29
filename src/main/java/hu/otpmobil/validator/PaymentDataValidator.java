@@ -1,23 +1,17 @@
 package hu.otpmobil.validator;
 
-import hu.otpmobil.model.LineError;
 import hu.otpmobil.model.FieldName;
 import hu.otpmobil.model.PaymentType;
-import hu.otpmobil.model.UniqueId;
-import hu.otpmobil.util.AppLogger;
 import hu.otpmobil.util.Message;
 import hu.otpmobil.util.Separator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static hu.otpmobil.config.ApplicationConstants.REQUIRED_AMOUNT_OF_PAYMENT_DATA_PER_LINE;
 
 public class PaymentDataValidator extends AbstractValidator {
 
@@ -28,41 +22,13 @@ public class PaymentDataValidator extends AbstractValidator {
         super(LOGGER);
     }
 
-    public boolean isPaymentDataValid(String fileName, Integer lineNumber, String line, Separator separator) {
-        if (!isPaymentDataSyntacticallyValid(fileName, lineNumber, line, separator, REQUIRED_AMOUNT_OF_PAYMENT_DATA_PER_LINE)) {
-            return false;
-        }
-
-        List<String> lineErrors = validateLineDetailsAndCollectLineError(line, separator);
-        if (!lineErrors.isEmpty()) {
-            LineError lineError = new LineError()
-                    .fileName(fileName)
-                    .lineNumber(lineNumber)
-                    .lineContent(line)
-                    .errors(lineErrors);
-            AppLogger.logLineError(LOGGER, lineError);
-            return false;
-        }
-
-        return true;
-    }
-
-    public boolean isUniqueIdExists(String fileName, Integer lineNumber, String line, UniqueId uniqueId, List<UniqueId> uniqueIdList) {
-        if (!isUniqueIdExists(uniqueId, uniqueIdList)) {
-            LineError lineError = new LineError().fileName(fileName).lineNumber(lineNumber).lineContent(line);
-            lineError.addError(Message.PAYMENT_DATA_CANNOT_LINK_TO_CUSTOMER.getMessage());
-            AppLogger.logLineError(LOGGER, lineError);
-            return false;
-        }
-        return true;
-    }
-
-    private List<String> validateLineDetailsAndCollectLineError(String line, Separator separator) {
+    @Override
+    protected List<String> validateLineDetailsAndCollectLineErrors(String line, Separator separator) {
         List<String> lineErrors = new ArrayList<>();
         String[] data = line.split(separator.getSeparatorRegex());
 
-        validateWebShopIdAndAddError(data[0], lineErrors);
-        validateCustomerIdAndAddError(data[1], lineErrors);
+        validateDataIsNotEmptyAndAddError(data[0], FieldName.WEB_SHOP_ID, lineErrors);
+        validateDataIsNotEmptyAndAddError(data[1], FieldName.CUSTOMER_ID, lineErrors);
         PaymentType paymentType = getValidatedPaymentTypeOrNull(data[2], lineErrors);
         validateAmountAndAddError(data[3], lineErrors);
         validateBankAccountNumberAndAddError(paymentType, data[4], lineErrors);
@@ -72,21 +38,9 @@ public class PaymentDataValidator extends AbstractValidator {
         return lineErrors;
     }
 
-    private void validateWebShopIdAndAddError(String webShopId, List<String> lineErrors) {
-        if (webShopId.isEmpty()) {
-            lineErrors.add(MessageFormat.format(Message.DATA_CANNOT_BE_EMPTY.getMessage(), FieldName.WEB_SHOP_ID.getName()));
-        }
-    }
-
-    private void validateCustomerIdAndAddError(String customerId, List<String> lineErrors) {
-        if (customerId.isEmpty()) {
-            lineErrors.add(MessageFormat.format(Message.DATA_CANNOT_BE_EMPTY.getMessage(), FieldName.CUSTOMER_ID.getName()));
-        }
-    }
-
     private PaymentType getValidatedPaymentTypeOrNull(String paymentTypeString, List<String> lineErrors) {
         if (paymentTypeString.isEmpty()) {
-            lineErrors.add(MessageFormat.format(Message.DATA_CANNOT_BE_EMPTY.getMessage(), FieldName.PAYMENT_TYPE.getName()));
+            addErrorForEmptyData(FieldName.PAYMENT_TYPE, lineErrors);
             return null;
         }
 
@@ -99,7 +53,7 @@ public class PaymentDataValidator extends AbstractValidator {
 
     private void validateAmountAndAddError(String amountString, List<String> lineErrors) {
         if (amountString.isEmpty()) {
-            lineErrors.add(MessageFormat.format(Message.DATA_CANNOT_BE_EMPTY.getMessage(), FieldName.AMOUNT.getName()));
+            addErrorForEmptyData(FieldName.AMOUNT, lineErrors);
         } else {
             try {
                 Integer amount = Integer.parseInt(amountString.trim());
@@ -114,16 +68,14 @@ public class PaymentDataValidator extends AbstractValidator {
 
     private void validateBankAccountNumberAndAddError(PaymentType paymentType, String bankAccountNumber, List<String> lineErrors) {
         if (paymentType == PaymentType.TRANSFER) {
-            if (bankAccountNumber.isEmpty()) {
-                lineErrors.add(MessageFormat.format(Message.DATA_CANNOT_BE_EMPTY.getMessage(), FieldName.BANK_ACCOUNT_NUMBER.getName()));
-            }
+            validateDataIsNotEmptyAndAddError(bankAccountNumber, FieldName.BANK_ACCOUNT_NUMBER, lineErrors);
         }
     }
 
     private void validateCardNumberAndAddError(PaymentType paymentType, String cardNumber, List<String> lineErrors) {
         if (paymentType == PaymentType.CARD) {
             if (cardNumber.isEmpty()) {
-                lineErrors.add(MessageFormat.format(Message.DATA_CANNOT_BE_EMPTY.getMessage(), FieldName.CARD_NUMBER.getName()));
+                addErrorForEmptyData(FieldName.CARD_NUMBER, lineErrors);
             } else if (!isCardNumberValid(cardNumber)) {
                 lineErrors.add(Message.INVALID_CARD_NUMBER.getMessage());
             }
@@ -153,7 +105,7 @@ public class PaymentDataValidator extends AbstractValidator {
 
     private void validateDateAndAddError(String dateString, List<String> lineErrors) {
         if (dateString.isEmpty()) {
-            lineErrors.add(MessageFormat.format(Message.DATA_CANNOT_BE_EMPTY.getMessage(), FieldName.DATE.getName()));
+            addErrorForEmptyData(FieldName.DATE, lineErrors);
         } else {
             try {
                 LocalDate.parse(dateString, formatter);

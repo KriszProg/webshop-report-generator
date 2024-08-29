@@ -3,9 +3,9 @@ package hu.otpmobil.validator;
 import hu.otpmobil.model.FieldName;
 import hu.otpmobil.model.LineError;
 import hu.otpmobil.model.UniqueId;
-import hu.otpmobil.util.AppLogger;
 import hu.otpmobil.util.Message;
 import hu.otpmobil.util.Separator;
+import org.slf4j.LoggerFactory;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -14,6 +14,12 @@ import java.util.List;
 import static hu.otpmobil.config.ApplicationConstants.*;
 
 public class CustomerDataValidator extends AbstractValidator {
+
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(CustomerDataValidator.class);
+
+    public CustomerDataValidator() {
+        super(LOGGER);
+    }
 
     public boolean isCustomerDataValid(String fileName, Integer lineNumber, String line, Separator separator) {
         if (!isPaymentDataSyntacticallyValid(fileName, lineNumber, line, separator, REQUIRED_AMOUNT_OF_CUSTOMER_DATA_PER_LINE)) {
@@ -27,7 +33,7 @@ public class CustomerDataValidator extends AbstractValidator {
                     .lineNumber(lineNumber)
                     .lineContent(line)
                     .errors(lineErrors);
-            AppLogger.logLineError(lineError);
+            logLineError(lineError);
             return false;
         }
 
@@ -38,7 +44,7 @@ public class CustomerDataValidator extends AbstractValidator {
         if (isUniqueIdExists(uniqueId, uniqueIdList)) {
             LineError lineError = new LineError().fileName(fileName).lineNumber(lineNumber).lineContent(line);
             lineError.addError(Message.CUSTOMER_EXISTS.getMessage());
-            AppLogger.logLineError(lineError);
+            logLineError(lineError);
             return true;
         }
         return false;

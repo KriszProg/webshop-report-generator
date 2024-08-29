@@ -4,9 +4,9 @@ import hu.otpmobil.model.LineError;
 import hu.otpmobil.model.FieldName;
 import hu.otpmobil.model.PaymentType;
 import hu.otpmobil.model.UniqueId;
-import hu.otpmobil.util.AppLogger;
 import hu.otpmobil.util.Message;
 import hu.otpmobil.util.Separator;
+import org.slf4j.LoggerFactory;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -18,6 +18,12 @@ import java.util.List;
 import static hu.otpmobil.config.ApplicationConstants.REQUIRED_AMOUNT_OF_PAYMENT_DATA_PER_LINE;
 
 public class PaymentDataValidator extends AbstractValidator {
+
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(PaymentDataValidator.class);
+
+    public PaymentDataValidator() {
+        super(LOGGER);
+    }
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
 
@@ -33,7 +39,7 @@ public class PaymentDataValidator extends AbstractValidator {
                     .lineNumber(lineNumber)
                     .lineContent(line)
                     .errors(lineErrors);
-            AppLogger.logLineError(lineError);
+            logLineError(lineError);
             return false;
         }
 
@@ -44,7 +50,7 @@ public class PaymentDataValidator extends AbstractValidator {
         if (!isUniqueIdExists(uniqueId, uniqueIdList)) {
             LineError lineError = new LineError().fileName(fileName).lineNumber(lineNumber).lineContent(line);
             lineError.addError(Message.PAYMENT_DATA_CANNOT_LINK_TO_CUSTOMER.getMessage());
-            AppLogger.logLineError(lineError);
+            logLineError(lineError);
             return false;
         }
         return true;

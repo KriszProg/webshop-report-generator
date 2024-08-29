@@ -2,6 +2,7 @@ package hu.otpmobil.service;
 
 import hu.otpmobil.model.CustomerPayment;
 import hu.otpmobil.model.WebShopSales;
+import hu.otpmobil.util.Separator;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
@@ -60,7 +61,7 @@ public class CsvReportGeneratorServiceImpl implements CsvReportGeneratorService 
     private CSVPrinter getCSVPrinter (String filPath, String[] headers) throws IOException {
         FileWriter writer = new FileWriter(filPath);
         return new CSVPrinter(writer, CSVFormat.DEFAULT.builder()
-                .setDelimiter(';')
+                .setDelimiter(Separator.SEMICOLON.getSeparatorString())
                 .setHeader(headers)
                 .build());
     }

@@ -16,7 +16,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 
 import static hu.otpmobil.config.ApplicationConstants.*;
@@ -26,7 +25,6 @@ public class PaymentDataProcessorServiceImpl implements PaymentDataProcessorServ
     private static final Logger LOGGER = LoggerFactory.getLogger(PaymentDataProcessorServiceImpl.class);
     private final DataStore dataStore;
     private final PaymentDataValidator validator;
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
 
     public PaymentDataProcessorServiceImpl(PaymentDataValidator validator) {
         this.validator = validator;
@@ -81,7 +79,7 @@ public class PaymentDataProcessorServiceImpl implements PaymentDataProcessorServ
                 .amount(Integer.valueOf(data[3]))
                 .bankAccountNumber(data[4])
                 .cardNumber(data[5])
-                .date(LocalDate.parse(data[6], formatter));
+                .date(LocalDate.parse(data[6], DATE_TIME_FORMATTER));
     }
 
     private void savePayment(Payment payment) {

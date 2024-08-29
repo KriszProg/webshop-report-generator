@@ -8,15 +8,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static hu.otpmobil.config.ApplicationConstants.DATE_TIME_FORMATTER;
+
 public class PaymentDataValidator extends AbstractValidator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PaymentDataValidator.class);
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
 
     public PaymentDataValidator() {
         super(LOGGER);
@@ -108,7 +108,7 @@ public class PaymentDataValidator extends AbstractValidator {
             addErrorForEmptyData(FieldName.DATE, lineErrors);
         } else {
             try {
-                LocalDate.parse(dateString, formatter);
+                LocalDate.parse(dateString, DATE_TIME_FORMATTER);
             } catch (DateTimeParseException e) {
                 lineErrors.add(Message.INVALID_DATE_FORMAT.getMessage());
             }

@@ -2,19 +2,26 @@ package hu.otpmobil.service;
 
 import hu.otpmobil.data.DataStore;
 import hu.otpmobil.model.Customer;
+import hu.otpmobil.model.LineError;
 import hu.otpmobil.model.UniqueId;
+import hu.otpmobil.util.AppLogger;
+import hu.otpmobil.util.Message;
 import hu.otpmobil.util.Separator;
 import hu.otpmobil.validator.CustomerDataValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 
-import static hu.otpmobil.config.ApplicationConstants.BACKSLASH;
+import static hu.otpmobil.config.ApplicationConstants.*;
 
 public class CustomerDataProcessorServiceImpl implements CustomerDataProcessorService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CustomerDataProcessorServiceImpl.class);
     private final DataStore dataStore;
     private final CustomerDataValidator validator;
 
@@ -34,12 +41,18 @@ public class CustomerDataProcessorServiceImpl implements CustomerDataProcessorSe
                 lineNumber++;
 
                 String fileName = extractFileName(filePath);
-                if (!validator.isCustomerDataValid(fileName, lineNumber, line, separator)) {
+                if (validator.isDataInvalid(fileName, lineNumber, line, separator,
+                        REQUIRED_AMOUNT_OF_CUSTOMER_DATA_PER_LINE)) {
                     continue;
                 }
 
                 Customer customer = createCustomer(line, separator);
-                if (validator.isUniqueIdExists(fileName, lineNumber, line, customer.getUniqueId(), dataStore.getUniqueIdList())) {
+                if (dataStore.isCustomerExistsByUniqueId(customer.getUniqueId())) {
+                    AppLogger.logLineError(LOGGER, new LineError()
+                            .fileName(fileName)
+                            .lineNumber(lineNumber)
+                            .lineContent(line)
+                            .errors(Collections.singletonList(Message.CUSTOMER_EXISTS.getMessage())));
                     continue;
                 }
 

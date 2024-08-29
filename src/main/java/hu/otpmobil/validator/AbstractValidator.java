@@ -5,13 +5,18 @@ import hu.otpmobil.model.UniqueId;
 import hu.otpmobil.util.AppLogger;
 import hu.otpmobil.util.Message;
 import hu.otpmobil.util.Separator;
+import org.slf4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.List;
 
 public abstract class AbstractValidator {
 
-    protected AbstractValidator() {}
+    protected Logger logger;
+
+    protected AbstractValidator(Logger logger) {
+        this.logger = logger;
+    }
 
     protected boolean isPaymentDataSyntacticallyValid(String fileName, Integer lineNumber, String line, Separator separator, Integer requiredAmountOfData) {
         if (isLineEmpty(line)) {
@@ -20,13 +25,13 @@ public abstract class AbstractValidator {
         if (!isLineSeparatorPresent(line, separator)) {
             LineError lineError = new LineError().fileName(fileName).lineNumber(lineNumber).lineContent(line);
             lineError.addError(Message.EXPECTED_SEPARATOR_NOT_PRESENT.getMessage());
-            AppLogger.logLineError(lineError);
+            AppLogger.logLineError(logger, lineError);
             return false;
         }
         if (!isLineContainsDataInRequiredAmount(line, separator, requiredAmountOfData)) {
             LineError lineError = new LineError().fileName(fileName).lineNumber(lineNumber).lineContent(line);
             lineError.addError(MessageFormat.format(Message.INVALID_LINE_CONTENT.getMessage(), requiredAmountOfData));
-            AppLogger.logLineError(lineError);
+            AppLogger.logLineError(logger, lineError);
             return false;
         }
 

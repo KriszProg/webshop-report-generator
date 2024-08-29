@@ -5,6 +5,7 @@ public enum Message {
     COLLECTING_DATA_FOR_REPORT("Collecting data for {0}..."),
     CUSTOMER_EXISTS("Customer already exists based on the provided ids!"),
     DATA_CANNOT_BE_EMPTY("{0} cannot be empty!"),
+    DATA_PROCESSING_ERROR("An error occurred during read data from file!  DETAILS: {file : '{}', lineNumber : '{}', lineContent : '{}', errors : '{}'}"),
     ENTER_FILE_PATH_FOR_CUSTOMER_DATA("[STEP_1] Enter the full filepath for CUSTOMER data (example: C:\\webshop-source\\customer.csv) and hit Enter:"),
     ENTER_FILE_PATH_FOR_PAYMENT_DATA("[STEP_2] Enter the full filepath for PAYMENT data (example: C:\\webshop-source\\payments.csv) and hit Enter:"),
     EXPECTED_SEPARATOR_NOT_PRESENT("Line does not contain the expected separator!"),

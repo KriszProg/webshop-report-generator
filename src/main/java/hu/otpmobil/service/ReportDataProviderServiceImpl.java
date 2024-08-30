@@ -15,7 +15,6 @@ import static hu.otpmobil.config.ApplicationConstants.NUMBER_OF_TOP_LIST_ELEMENT
 public class ReportDataProviderServiceImpl implements ReportDataProviderService {
 
     private final DataStore dataStore;
-    private List<CustomerAndPayment> customerAndPaymentList = new ArrayList<>();
     private List<PurchaseByCustomerDetails> purchaseByCustomerDetailsList = new ArrayList<>();
 
     public ReportDataProviderServiceImpl() {
@@ -66,27 +65,41 @@ public class ReportDataProviderServiceImpl implements ReportDataProviderService 
                 .collect(Collectors.toList());
     }
 
-    private void initPurchaseByCustomerDetailsListIfEmpty() {
-        if (purchaseByCustomerDetailsList.isEmpty()) {
-            initPurchaseByCustomerDetailsList();
-        }
-    }
+    @Override
+    public List<PurchaseByWebShopCustomer> getDataForPurchaseByWebShopCustomerReport() {
+        Map<UniqueId, Customer> customerMap = dataStore.getCustomers().stream()
+                .collect(Collectors.toMap(Customer::getUniqueId, customer -> customer));
 
-    private void initPurchaseByCustomerDetailsList() {
-        initCustomerAndPaymentListIfEmpty();
-        purchaseByCustomerDetailsList = customerAndPaymentList.stream()
+        return dataStore.getPayments().stream()
                 .collect(Collectors.groupingBy(
-                        CustomerAndPayment::getCustomer,
-                        Collectors.summingInt(cap -> cap.getPayment().getAmount())
+                        Payment::getUniqueId,
+                        Collectors.summingInt(payment -> payment.getDetails().getAmount())
                 ))
                 .entrySet().stream()
-                .map(entry -> new PurchaseByCustomerDetails(entry.getKey(), entry.getValue()))
+                .map(entry -> {
+                    Customer customer = customerMap.get(entry.getKey());
+                    return new PurchaseByWebShopCustomer(
+                            customer,
+                            entry.getValue()
+                    );
+                })
+                .sorted(Comparator
+                        .comparing((PurchaseByWebShopCustomer item) -> item.getCustomer().getDetails().getName())
+                        .thenComparing(item -> item.getCustomer().getUniqueId().getWebShopId())
+                )
                 .collect(Collectors.toList());
     }
 
-    private void initCustomerAndPaymentListIfEmpty() {
-        if (customerAndPaymentList.isEmpty()) {
-            customerAndPaymentList = dataStore.getCustomerAndPaymentList();
+    private void initPurchaseByCustomerDetailsListIfEmpty() {
+        if (purchaseByCustomerDetailsList.isEmpty()) {
+            purchaseByCustomerDetailsList = dataStore.getCustomerAndPaymentList().stream()
+                    .collect(Collectors.groupingBy(
+                            CustomerAndPayment::getCustomer,
+                            Collectors.summingInt(cap -> cap.getPayment().getAmount())
+                    ))
+                    .entrySet().stream()
+                    .map(entry -> new PurchaseByCustomerDetails(entry.getKey(), entry.getValue()))
+                    .collect(Collectors.toList());
         }
     }
 

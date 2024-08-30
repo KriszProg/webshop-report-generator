@@ -16,6 +16,10 @@ public class UniqueId {
         return this;
     }
 
+    public String getCustomerId() {
+        return customerId;
+    }
+
     public UniqueId customerId(String customerId) {
         this.customerId = customerId;
         return this;

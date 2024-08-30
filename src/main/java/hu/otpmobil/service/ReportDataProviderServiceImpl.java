@@ -15,7 +15,6 @@ import static hu.otpmobil.config.ApplicationConstants.NUMBER_OF_TOP_LIST_ELEMENT
 public class ReportDataProviderServiceImpl implements ReportDataProviderService {
 
     private final DataStore dataStore;
-    private List<CustomerAndPayment> customerAndPaymentList = new ArrayList<>();
     private List<PurchaseByCustomerDetails> purchaseByCustomerDetailsList = new ArrayList<>();
 
     public ReportDataProviderServiceImpl() {
@@ -93,25 +92,14 @@ public class ReportDataProviderServiceImpl implements ReportDataProviderService 
 
     private void initPurchaseByCustomerDetailsListIfEmpty() {
         if (purchaseByCustomerDetailsList.isEmpty()) {
-            initPurchaseByCustomerDetailsList();
-        }
-    }
-
-    private void initPurchaseByCustomerDetailsList() {
-        initCustomerAndPaymentListIfEmpty();
-        purchaseByCustomerDetailsList = customerAndPaymentList.stream()
-                .collect(Collectors.groupingBy(
-                        CustomerAndPayment::getCustomer,
-                        Collectors.summingInt(cap -> cap.getPayment().getAmount())
-                ))
-                .entrySet().stream()
-                .map(entry -> new PurchaseByCustomerDetails(entry.getKey(), entry.getValue()))
-                .collect(Collectors.toList());
-    }
-
-    private void initCustomerAndPaymentListIfEmpty() {
-        if (customerAndPaymentList.isEmpty()) {
-            customerAndPaymentList = dataStore.getCustomerAndPaymentList();
+            purchaseByCustomerDetailsList = dataStore.getCustomerAndPaymentList().stream()
+                    .collect(Collectors.groupingBy(
+                            CustomerAndPayment::getCustomer,
+                            Collectors.summingInt(cap -> cap.getPayment().getAmount())
+                    ))
+                    .entrySet().stream()
+                    .map(entry -> new PurchaseByCustomerDetails(entry.getKey(), entry.getValue()))
+                    .collect(Collectors.toList());
         }
     }
 

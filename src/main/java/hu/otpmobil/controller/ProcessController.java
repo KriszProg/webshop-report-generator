@@ -1,6 +1,6 @@
 package hu.otpmobil.controller;
 
-import hu.otpmobil.model.CustomerPayment;
+import hu.otpmobil.model.PurchaseByCustomerDetails;
 import hu.otpmobil.model.WebShopSales;
 import hu.otpmobil.service.*;
 import hu.otpmobil.util.Message;
@@ -62,13 +62,13 @@ public class ProcessController {
         LOGGER.info(MessageFormat.format(Message.LOADING_PAYMENT_DATA_FROM_FILE_PATH.getMessage(), filePathForPaymentData));
         paymentDataProcessorService.readAndProcessPaymentData(filePathForPaymentData, separator);
 
-        LOGGER.info(MessageFormat.format(Message.COLLECTING_DATA_FOR_REPORT.getMessage(), CUSTOMER_PAYMENT_REPORT_NAME));
-        List<CustomerPayment> customerPaymentList = reportDataProviderService.getDataForCustomerPaymentReport();
-        LOGGER.info(MessageFormat.format(Message.GENERATING_REPORT.getMessage(), CUSTOMER_PAYMENT_REPORT_NAME));
-        csvReportGeneratorService.generateCustomerPaymentReport(customerPaymentList);
+        LOGGER.info(MessageFormat.format(Message.COLLECTING_DATA_FOR_REPORT.getMessage(), PURCHASE_BY_CUSTOMER_DETAILS_REPORT_NAME));
+        List<PurchaseByCustomerDetails> purchaseByCustomerDetailsList = reportDataProviderService.getDataForPurchaseByCustomerDetailsReport();
+        LOGGER.info(MessageFormat.format(Message.GENERATING_REPORT.getMessage(), PURCHASE_BY_CUSTOMER_DETAILS_REPORT_NAME));
+        csvReportGeneratorService.generatePurchaseByCustomerDetailsReport(purchaseByCustomerDetailsList);
 
         LOGGER.info(MessageFormat.format(Message.COLLECTING_DATA_FOR_REPORT.getMessage(), TOP_CUSTOMER_REPORT_NAME));
-        List<CustomerPayment> topCustomerList = reportDataProviderService.getDataForTopCustomerReport();
+        List<PurchaseByCustomerDetails> topCustomerList = reportDataProviderService.getDataForTopCustomerReport();
         LOGGER.info(MessageFormat.format(Message.GENERATING_REPORT.getMessage(), TOP_CUSTOMER_REPORT_NAME));
         csvReportGeneratorService.generateTopCustomerReport(topCustomerList);
 

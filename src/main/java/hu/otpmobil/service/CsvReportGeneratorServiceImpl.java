@@ -1,6 +1,7 @@
 package hu.otpmobil.service;
 
-import hu.otpmobil.model.CustomerPayment;
+import hu.otpmobil.model.CustomerDetails;
+import hu.otpmobil.model.PurchaseByCustomerDetails;
 import hu.otpmobil.model.WebShopSales;
 import hu.otpmobil.util.Separator;
 import org.apache.commons.csv.CSVFormat;
@@ -16,26 +17,27 @@ import static hu.otpmobil.config.ApplicationConstants.*;
 public class CsvReportGeneratorServiceImpl implements CsvReportGeneratorService {
 
     @Override
-    public void generateCustomerPaymentReport(List<CustomerPayment> customerPayments) {
-        File file = new File(CUSTOMER_PAYMENT_REPORT_FULL_PATH);
+    public void generatePurchaseByCustomerDetailsReport(List<PurchaseByCustomerDetails> purchaseByCustomerDetailsList) {
+        File file = new File(PURCHASE_BY_CUSTOMER_DETAILS_REPORT_FULL_PATH);
 
-        try (CSVPrinter csvPrinter = getCSVPrinter(file.getPath(), CUSTOMER_PAYMENT_REPORT_HEADER)) {
-            for (CustomerPayment payment : customerPayments) {
-                csvPrinter.printRecord(payment.getName(), payment.getAddress(), payment.getTotalPayment());
+        try (CSVPrinter csvPrinter = getCSVPrinter(file.getPath(), PURCHASE_BY_CUSTOMER_DETAILS_REPORT_HEADER)) {
+            for (PurchaseByCustomerDetails purchase : purchaseByCustomerDetailsList) {
+                CustomerDetails customer = purchase.getCustomerDetails();
+                csvPrinter.printRecord(customer.getName(), customer.getAddress(), purchase.getTotalPurchaseAmount());
             }
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void generateTopCustomerReport(List<CustomerPayment> topCustomerPayments) {
+    public void generateTopCustomerReport(List<PurchaseByCustomerDetails> topCustomerList) {
         File file = new File(TOP_CUSTOMER_REPORT_FULL_PATH);
 
         try (CSVPrinter csvPrinter = getCSVPrinter(file.getPath(), TOP_CUSTOMER_REPORT_HEADER)) {
-            for (CustomerPayment payment : topCustomerPayments) {
-                csvPrinter.printRecord(payment.getName(), payment.getAddress(), payment.getTotalPayment());
+            for (PurchaseByCustomerDetails purchase : topCustomerList) {
+                CustomerDetails customer = purchase.getCustomerDetails();
+                csvPrinter.printRecord(customer.getName(), customer.getAddress(), purchase.getTotalPurchaseAmount());
             }
 
         } catch (IOException e) {

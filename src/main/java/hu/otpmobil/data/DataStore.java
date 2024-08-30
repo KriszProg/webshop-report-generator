@@ -1,11 +1,14 @@
 package hu.otpmobil.data;
 
 import hu.otpmobil.model.Customer;
+import hu.otpmobil.model.CustomerAndPayment;
 import hu.otpmobil.model.Payment;
 import hu.otpmobil.model.UniqueId;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class DataStore {
 
@@ -43,6 +46,18 @@ public class DataStore {
 
     public List<Payment> getPayments() {
         return payments;
+    }
+
+    public List<CustomerAndPayment> getCustomerAndPaymentList() {
+        Map<UniqueId, Customer> customerMap = customers.stream()
+                .collect(Collectors.toMap(Customer::getUniqueId, customer -> customer));
+
+        return payments.stream()
+                .map(payment -> {
+                    Customer customer = customerMap.get(payment.getUniqueId());
+                    return new CustomerAndPayment(customer.getUniqueId(), customer.getDetails(), payment.getDetails());
+                })
+                .collect(Collectors.toList());
     }
 
 }

@@ -6,11 +6,7 @@ import java.util.Objects;
 public class Payment {
 
     private UniqueId uniqueId;
-    private String paymentType;
-    private Integer amount;
-    private String bankAccountNumber;
-    private String cardNumber;
-    private LocalDate date;
+    private PaymentDetails details;
 
 
     public UniqueId getUniqueId() {
@@ -22,36 +18,12 @@ public class Payment {
         return this;
     }
 
-    public String getPaymentType() {
-        return paymentType;
+    public PaymentDetails getDetails() {
+        return details;
     }
 
-    public Payment paymentType(String paymentType) {
-        this.paymentType = paymentType;
-        return this;
-    }
-
-    public Integer getAmount() {
-        return amount;
-    }
-
-    public Payment amount(Integer amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    public Payment bankAccountNumber(String bankAccountNumber) {
-        this.bankAccountNumber = bankAccountNumber;
-        return this;
-    }
-
-    public Payment cardNumber(String cardNumber) {
-        this.cardNumber = cardNumber;
-        return this;
-    }
-
-    public Payment date(LocalDate date) {
-        this.date = date;
+    public Payment details(PaymentDetails details) {
+        this.details = details;
         return this;
     }
 
@@ -61,27 +33,19 @@ public class Payment {
         if (object == null || getClass() != object.getClass()) return false;
         Payment payment = (Payment) object;
         return Objects.equals(uniqueId, payment.uniqueId)
-                && Objects.equals(paymentType, payment.paymentType)
-                && Objects.equals(amount, payment.amount)
-                && Objects.equals(bankAccountNumber, payment.bankAccountNumber)
-                && Objects.equals(cardNumber, payment.cardNumber)
-                && Objects.equals(date, payment.date);
+                && Objects.equals(details, payment.details);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(uniqueId, paymentType, amount, bankAccountNumber, cardNumber, date);
+        return Objects.hash(uniqueId, details);
     }
 
     @Override
     public String toString() {
         return "Payment{" +
                 "uniqueId=" + uniqueId +
-                ", paymentType='" + paymentType + '\'' +
-                ", amount=" + amount +
-                ", bankAccountNumber='" + bankAccountNumber + '\'' +
-                ", cardNumber='" + cardNumber + '\'' +
-                ", date=" + date +
+                ", details=" + details +
                 '}';
     }
 

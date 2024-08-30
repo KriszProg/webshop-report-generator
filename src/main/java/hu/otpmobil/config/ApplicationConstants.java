@@ -18,10 +18,10 @@ public final class ApplicationConstants {
     // Log and Reports related constants
     public static final String LOG_BASE_PATH = "C:/webshop/log/";
     public static final String REPORT_BASE_PATH = "C:/webshop/reports/";
-    public static final String[] CUSTOMER_PAYMENT_REPORT_HEADER = {"NAME", "ADDRESS", "vásárlás összesen"};
-    public static final String CUSTOMER_PAYMENT_REPORT_NAME = "report01.csv";
-    public static final String CUSTOMER_PAYMENT_REPORT_FULL_PATH = REPORT_BASE_PATH + CUSTOMER_PAYMENT_REPORT_NAME;
-    public static final String[] TOP_CUSTOMER_REPORT_HEADER = CUSTOMER_PAYMENT_REPORT_HEADER;
+    public static final String[] PURCHASE_BY_CUSTOMER_DETAILS_REPORT_HEADER = {"NAME", "ADDRESS", "vásárlás összesen"};
+    public static final String PURCHASE_BY_CUSTOMER_DETAILS_REPORT_NAME = "report01.csv";
+    public static final String PURCHASE_BY_CUSTOMER_DETAILS_REPORT_FULL_PATH = REPORT_BASE_PATH + PURCHASE_BY_CUSTOMER_DETAILS_REPORT_NAME;
+    public static final String[] TOP_CUSTOMER_REPORT_HEADER = PURCHASE_BY_CUSTOMER_DETAILS_REPORT_HEADER;
     public static final String TOP_CUSTOMER_REPORT_NAME = "top.csv";
     public static final String TOP_CUSTOMER_REPORT_FULL_PATH = REPORT_BASE_PATH + TOP_CUSTOMER_REPORT_NAME;
     public static final String[] WEB_SHOP_SALES_REPORT_HEADER = {"WEBSHOP", "kártyás vásárlások összege", "átutalásos vásárlások összege"};

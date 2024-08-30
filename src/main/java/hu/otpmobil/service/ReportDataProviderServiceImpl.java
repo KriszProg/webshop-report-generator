@@ -15,31 +15,33 @@ import static hu.otpmobil.config.ApplicationConstants.NUMBER_OF_TOP_LIST_ELEMENT
 public class ReportDataProviderServiceImpl implements ReportDataProviderService {
 
     private final DataStore dataStore;
-    private List<CustomerPayment> customerPaymentList = new ArrayList<>();
+    private List<CustomerAndPayment> customerAndPaymentList = new ArrayList<>();
+    private List<PurchaseByCustomerDetails> purchaseByCustomerDetailsList = new ArrayList<>();
 
     public ReportDataProviderServiceImpl() {
         this.dataStore = DataStore.getInstance();
     }
 
     @Override
-    public List<CustomerPayment> getDataForCustomerPaymentReport() {
-        initCustomerPaymentListIfEmpty();
-        return customerPaymentList;
+    public List<PurchaseByCustomerDetails> getDataForPurchaseByCustomerDetailsReport() {
+        initPurchaseByCustomerDetailsListIfEmpty();
+        return getPurchaseByCustomerDetailsListSortedByTotalAmount(SortDirection.DESC);
     }
 
     @Override
-    public List<CustomerPayment> getDataForTopCustomerReport() {
-        initCustomerPaymentListIfEmpty();
-        List<CustomerPayment> sortedCustomerPayment = getCustomerPaymentSortedByTotalPayment(SortDirection.DESC);
+    public List<PurchaseByCustomerDetails> getDataForTopCustomerReport() {
+        initPurchaseByCustomerDetailsListIfEmpty();
+        List<PurchaseByCustomerDetails> sortedList = getPurchaseByCustomerDetailsListSortedByTotalAmount(SortDirection.DESC);
 
-        List<Integer> topTotalPaymentList = sortedCustomerPayment.stream()
-                .map(CustomerPayment::getTotalPayment)
+        List<Integer> topTotalPaymentList = sortedList.stream()
+                .map(PurchaseByCustomerDetails::getTotalPurchaseAmount)
                 .distinct()
                 .limit(NUMBER_OF_TOP_LIST_ELEMENTS)
                 .collect(Collectors.toList());
 
-        return sortedCustomerPayment.stream()
-                .filter(customerPayment -> topTotalPaymentList.contains(customerPayment.getTotalPayment()))
+        return sortedList.stream()
+                .filter(purchaseByCustomerDetails ->
+                        topTotalPaymentList.contains(purchaseByCustomerDetails.getTotalPurchaseAmount()))
                 .collect(Collectors.toList());
     }
 
@@ -49,8 +51,8 @@ public class ReportDataProviderServiceImpl implements ReportDataProviderService 
                 .collect(Collectors.groupingBy(
                         payment -> payment.getUniqueId().getWebShopId(),
                         Collectors.groupingBy(
-                                Payment::getPaymentType,
-                                Collectors.summingInt(Payment::getAmount)
+                                payment -> payment.getDetails().getPaymentType(),
+                                Collectors.summingInt(payment -> payment.getDetails().getAmount())
                         )
                 ))
                 .entrySet().stream()
@@ -64,50 +66,47 @@ public class ReportDataProviderServiceImpl implements ReportDataProviderService 
                 .collect(Collectors.toList());
     }
 
-    private void initCustomerPaymentListIfEmpty() {
-        if (customerPaymentList.isEmpty()) {
-            initCustomerPaymentList();
+    private void initPurchaseByCustomerDetailsListIfEmpty() {
+        if (purchaseByCustomerDetailsList.isEmpty()) {
+            initPurchaseByCustomerDetailsList();
         }
     }
 
-    private void initCustomerPaymentList() {
-        Map<UniqueId, Customer> customerMap = dataStore.getCustomers().stream()
-                .collect(Collectors.toMap(Customer::getUniqueId, customer -> customer));
-
-        customerPaymentList = dataStore.getPayments().stream()
+    private void initPurchaseByCustomerDetailsList() {
+        initCustomerAndPaymentListIfEmpty();
+        purchaseByCustomerDetailsList = customerAndPaymentList.stream()
                 .collect(Collectors.groupingBy(
-                        Payment::getUniqueId,
-                        Collectors.summingInt(Payment::getAmount)
+                        CustomerAndPayment::getCustomer,
+                        Collectors.summingInt(cap -> cap.getPayment().getAmount())
                 ))
                 .entrySet().stream()
-                .map(entry -> {
-                    Customer customer = customerMap.get(entry.getKey());
-                    return new CustomerPayment(
-                            customer.getName(),
-                            customer.getAddress(),
-                            entry.getValue()
-                    );
-                })
+                .map(entry -> new PurchaseByCustomerDetails(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
     }
 
-    private List<CustomerPayment> getCustomerPaymentSortedByTotalPayment(SortDirection direction) {
-        if (direction == SortDirection.DESC) {
-            return getCustomerPaymentSortedByTotalPaymentHighestFirst();
-        } else {
-            return getCustomerPaymentSortedByTotalPaymentLowestFirst();
+    private void initCustomerAndPaymentListIfEmpty() {
+        if (customerAndPaymentList.isEmpty()) {
+            customerAndPaymentList = dataStore.getCustomerAndPaymentList();
         }
     }
 
-    private List<CustomerPayment> getCustomerPaymentSortedByTotalPaymentHighestFirst() {
-        return customerPaymentList.stream()
-                .sorted(Comparator.comparing(CustomerPayment::getTotalPayment).reversed())
+    private List<PurchaseByCustomerDetails> getPurchaseByCustomerDetailsListSortedByTotalAmount(SortDirection direction) {
+        if (direction == SortDirection.DESC) {
+            return getPurchaseByCustomerDetailsListSortedByTotalAmountHighestFirst();
+        } else {
+            return getPurchaseByCustomerDetailsListSortedByTotalAmountLowestFirst();
+        }
+    }
+
+    private List<PurchaseByCustomerDetails> getPurchaseByCustomerDetailsListSortedByTotalAmountHighestFirst() {
+        return purchaseByCustomerDetailsList.stream()
+                .sorted(Comparator.comparing(PurchaseByCustomerDetails::getTotalPurchaseAmount).reversed())
                 .collect(Collectors.toList());
     }
 
-    private List<CustomerPayment> getCustomerPaymentSortedByTotalPaymentLowestFirst() {
-        return customerPaymentList.stream()
-                .sorted(Comparator.comparing(CustomerPayment::getTotalPayment))
+    private List<PurchaseByCustomerDetails> getPurchaseByCustomerDetailsListSortedByTotalAmountLowestFirst() {
+        return purchaseByCustomerDetailsList.stream()
+                .sorted(Comparator.comparing(PurchaseByCustomerDetails::getTotalPurchaseAmount))
                 .collect(Collectors.toList());
     }
 

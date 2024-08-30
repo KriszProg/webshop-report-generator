@@ -2,6 +2,7 @@ package hu.otpmobil.service;
 
 import hu.otpmobil.data.DataStore;
 import hu.otpmobil.model.Customer;
+import hu.otpmobil.model.CustomerDetails;
 import hu.otpmobil.model.LineError;
 import hu.otpmobil.model.UniqueId;
 import hu.otpmobil.util.AppLogger;
@@ -74,8 +75,9 @@ public class CustomerDataProcessorServiceImpl implements CustomerDataProcessorSe
                 .uniqueId(new UniqueId()
                         .webShopId(data[0])
                         .customerId(data[1]))
-                .name(data[2])
-                .address(data[3]);
+                .details(new CustomerDetails()
+                    .name(data[2])
+                    .address(data[3]));
     }
 
     private void saveCustomer(Customer customer) {

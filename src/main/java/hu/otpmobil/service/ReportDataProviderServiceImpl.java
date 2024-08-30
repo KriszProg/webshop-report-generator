@@ -66,6 +66,31 @@ public class ReportDataProviderServiceImpl implements ReportDataProviderService 
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<PurchaseByWebShopCustomer> getDataForPurchaseByWebShopCustomerReport() {
+        Map<UniqueId, Customer> customerMap = dataStore.getCustomers().stream()
+                .collect(Collectors.toMap(Customer::getUniqueId, customer -> customer));
+
+        return dataStore.getPayments().stream()
+                .collect(Collectors.groupingBy(
+                        Payment::getUniqueId,
+                        Collectors.summingInt(payment -> payment.getDetails().getAmount())
+                ))
+                .entrySet().stream()
+                .map(entry -> {
+                    Customer customer = customerMap.get(entry.getKey());
+                    return new PurchaseByWebShopCustomer(
+                            customer,
+                            entry.getValue()
+                    );
+                })
+                .sorted(Comparator
+                        .comparing((PurchaseByWebShopCustomer item) -> item.getCustomer().getDetails().getName())
+                        .thenComparing(item -> item.getCustomer().getUniqueId().getWebShopId())
+                )
+                .collect(Collectors.toList());
+    }
+
     private void initPurchaseByCustomerDetailsListIfEmpty() {
         if (purchaseByCustomerDetailsList.isEmpty()) {
             initPurchaseByCustomerDetailsList();

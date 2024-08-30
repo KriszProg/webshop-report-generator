@@ -1,6 +1,7 @@
 package hu.otpmobil.controller;
 
 import hu.otpmobil.model.PurchaseByCustomerDetails;
+import hu.otpmobil.model.PurchaseByWebShopCustomer;
 import hu.otpmobil.model.WebShopSales;
 import hu.otpmobil.service.*;
 import hu.otpmobil.util.Message;
@@ -76,6 +77,11 @@ public class ProcessController {
         List<WebShopSales> webShopSalesList = reportDataProviderService.getDataForWebShopSalesReport();
         LOGGER.info(MessageFormat.format(Message.GENERATING_REPORT.getMessage(), WEB_SHOP_SALES_REPORT_NAME));
         csvReportGeneratorService.generateWebShopSalesReport(webShopSalesList);
+
+        LOGGER.info(MessageFormat.format(Message.COLLECTING_DATA_FOR_REPORT.getMessage(), PURCHASE_BY_WEB_SHOP_CUSTOMER_REPORT_NAME));
+        List<PurchaseByWebShopCustomer> purchaseByWebShopCustomerList = reportDataProviderService.getDataForPurchaseByWebShopCustomerReport();
+        LOGGER.info(MessageFormat.format(Message.GENERATING_REPORT.getMessage(), PURCHASE_BY_WEB_SHOP_CUSTOMER_REPORT_NAME));
+        csvReportGeneratorService.generatePurchaseByWebShopCustomerReport(purchaseByWebShopCustomerList);
     }
 
     private void initFilePathForCustomerData() {

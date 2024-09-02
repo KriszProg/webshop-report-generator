@@ -1,8 +1,8 @@
 package hu.otpmobil.service;
 
 import hu.otpmobil.data.DataStore;
+import hu.otpmobil.model.WebShopCustomer;
 import hu.otpmobil.model.Customer;
-import hu.otpmobil.model.CustomerDetails;
 import hu.otpmobil.model.LineError;
 import hu.otpmobil.model.UniqueId;
 import hu.otpmobil.util.AppLogger;
@@ -47,8 +47,8 @@ public class CustomerDataProcessorServiceImpl implements CustomerDataProcessorSe
                     continue;
                 }
 
-                Customer customer = createCustomer(line, separator);
-                if (dataStore.isCustomerExistsByUniqueId(customer.getUniqueId())) {
+                WebShopCustomer webShopCustomer = createWebShopCustomer(line, separator);
+                if (dataStore.isWebShopCustomerExistsByUniqueId(webShopCustomer.getUniqueId())) {
                     AppLogger.logLineError(LOGGER, new LineError()
                             .fileName(fileName)
                             .lineNumber(lineNumber)
@@ -57,7 +57,7 @@ public class CustomerDataProcessorServiceImpl implements CustomerDataProcessorSe
                     continue;
                 }
 
-                saveCustomer(customer);
+                saveWebShopCustomer(webShopCustomer);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -69,19 +69,19 @@ public class CustomerDataProcessorServiceImpl implements CustomerDataProcessorSe
         return filePath.substring(lastIndex + 1);
     }
 
-    private Customer createCustomer(String line, Separator separator) {
+    private WebShopCustomer createWebShopCustomer(String line, Separator separator) {
         String[] data = line.split(separator.getSeparatorRegex());
-        return new Customer()
+        return new WebShopCustomer()
                 .uniqueId(new UniqueId()
                         .webShopId(data[0])
                         .customerId(data[1]))
-                .details(new CustomerDetails()
+                .customer(new Customer()
                     .name(data[2])
                     .address(data[3]));
     }
 
-    private void saveCustomer(Customer customer) {
-        dataStore.saveCustomer(customer);
+    private void saveWebShopCustomer(WebShopCustomer webShopCustomer) {
+        dataStore.saveWebShopCustomer(webShopCustomer);
     }
 
 }

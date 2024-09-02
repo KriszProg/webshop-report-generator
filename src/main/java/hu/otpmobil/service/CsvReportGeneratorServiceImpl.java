@@ -15,12 +15,12 @@ import static hu.otpmobil.config.ApplicationConstants.*;
 public class CsvReportGeneratorServiceImpl implements CsvReportGeneratorService {
 
     @Override
-    public void generatePurchaseByCustomerDetailsReport(List<PurchaseByCustomerDetails> purchaseByCustomerDetailsList) {
-        File file = new File(PURCHASE_BY_CUSTOMER_DETAILS_REPORT_FULL_PATH);
+    public void generatePurchaseByCustomerReport(List<PurchaseByCustomer> purchaseByCustomerList) {
+        File file = new File(PURCHASE_BY_CUSTOMER_REPORT_FULL_PATH);
 
-        try (CSVPrinter csvPrinter = getCSVPrinter(file.getPath(), PURCHASE_BY_CUSTOMER_DETAILS_REPORT_HEADER)) {
-            for (PurchaseByCustomerDetails purchase : purchaseByCustomerDetailsList) {
-                CustomerDetails customer = purchase.getCustomerDetails();
+        try (CSVPrinter csvPrinter = getCSVPrinter(file.getPath(), PURCHASE_BY_CUSTOMER_REPORT_HEADER)) {
+            for (PurchaseByCustomer purchase : purchaseByCustomerList) {
+                Customer customer = purchase.getCustomer();
                 csvPrinter.printRecord(customer.getName(), customer.getAddress(), purchase.getTotalPurchaseAmount());
             }
         } catch (IOException e) {
@@ -29,12 +29,12 @@ public class CsvReportGeneratorServiceImpl implements CsvReportGeneratorService 
     }
 
     @Override
-    public void generateTopCustomerReport(List<PurchaseByCustomerDetails> topCustomerList) {
+    public void generateTopCustomerReport(List<PurchaseByCustomer> topCustomerList) {
         File file = new File(TOP_CUSTOMER_REPORT_FULL_PATH);
 
         try (CSVPrinter csvPrinter = getCSVPrinter(file.getPath(), TOP_CUSTOMER_REPORT_HEADER)) {
-            for (PurchaseByCustomerDetails purchase : topCustomerList) {
-                CustomerDetails customer = purchase.getCustomerDetails();
+            for (PurchaseByCustomer purchase : topCustomerList) {
+                Customer customer = purchase.getCustomer();
                 csvPrinter.printRecord(customer.getName(), customer.getAddress(), purchase.getTotalPurchaseAmount());
             }
 
@@ -64,8 +64,8 @@ public class CsvReportGeneratorServiceImpl implements CsvReportGeneratorService 
 
         try (CSVPrinter csvPrinter = getCSVPrinter(file.getPath(), PURCHASE_BY_WEB_SHOP_CUSTOMER_REPORT_HEADER)) {
             for (PurchaseByWebShopCustomer purchase : purchaseByWebShopCustomerList) {
-                UniqueId uniqueId = purchase.getCustomer().getUniqueId();
-                CustomerDetails customer = purchase.getCustomer().getDetails();
+                UniqueId uniqueId = purchase.getWebShopCustomer().getUniqueId();
+                Customer customer = purchase.getWebShopCustomer().getCustomer();
                 csvPrinter.printRecord(uniqueId.getWebShopId(), uniqueId.getCustomerId(), customer.getName(),
                         customer.getAddress(), purchase.getTotalPurchaseAmount());
             }

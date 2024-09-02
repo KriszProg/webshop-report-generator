@@ -4,24 +4,24 @@ import java.util.Objects;
 
 public class Customer {
 
-    private UniqueId uniqueId;
-    private CustomerDetails details;
+    private String name;
+    private String address;
 
-    public UniqueId getUniqueId() {
-        return uniqueId;
+    public String getName() {
+        return name;
     }
 
-    public Customer uniqueId(UniqueId uniqueId) {
-        this.uniqueId = uniqueId;
+    public Customer name(String name) {
+        this.name = name;
         return this;
     }
 
-    public CustomerDetails getDetails() {
-        return details;
+    public String getAddress() {
+        return address;
     }
 
-    public Customer details(CustomerDetails details) {
-        this.details = details;
+    public Customer address(String address) {
+        this.address = address;
         return this;
     }
 
@@ -29,21 +29,21 @@ public class Customer {
     public boolean equals(Object object) {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
-        Customer customer = (Customer) object;
-        return Objects.equals(uniqueId, customer.uniqueId)
-                && Objects.equals(details, customer.details);
+        Customer that = (Customer) object;
+        return Objects.equals(name, that.name)
+                && Objects.equals(address, that.address);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(uniqueId, details);
+        return Objects.hash(name, address);
     }
 
     @Override
     public String toString() {
         return "Customer{" +
-                "uniqueId=" + uniqueId +
-                ", details=" + details +
+                "name='" + name + '\'' +
+                ", address='" + address + '\'' +
                 '}';
     }
 

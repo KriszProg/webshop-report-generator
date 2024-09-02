@@ -1,6 +1,6 @@
 package hu.otpmobil.controller;
 
-import hu.otpmobil.model.PurchaseByCustomerDetails;
+import hu.otpmobil.model.PurchaseByCustomer;
 import hu.otpmobil.model.PurchaseByWebShopCustomer;
 import hu.otpmobil.model.WebShopSales;
 import hu.otpmobil.service.*;
@@ -63,13 +63,13 @@ public class ProcessController {
         LOGGER.info(MessageFormat.format(Message.LOADING_PAYMENT_DATA_FROM_FILE_PATH.getMessage(), filePathForPaymentData));
         paymentDataProcessorService.readAndProcessPaymentData(filePathForPaymentData, separator);
 
-        LOGGER.info(MessageFormat.format(Message.COLLECTING_DATA_FOR_REPORT.getMessage(), PURCHASE_BY_CUSTOMER_DETAILS_REPORT_NAME));
-        List<PurchaseByCustomerDetails> purchaseByCustomerDetailsList = reportDataProviderService.getDataForPurchaseByCustomerDetailsReport();
-        LOGGER.info(MessageFormat.format(Message.GENERATING_REPORT.getMessage(), PURCHASE_BY_CUSTOMER_DETAILS_REPORT_NAME));
-        csvReportGeneratorService.generatePurchaseByCustomerDetailsReport(purchaseByCustomerDetailsList);
+        LOGGER.info(MessageFormat.format(Message.COLLECTING_DATA_FOR_REPORT.getMessage(), PURCHASE_BY_CUSTOMER_REPORT_NAME));
+        List<PurchaseByCustomer> purchaseByCustomerList = reportDataProviderService.getDataForPurchaseByCustomerReport();
+        LOGGER.info(MessageFormat.format(Message.GENERATING_REPORT.getMessage(), PURCHASE_BY_CUSTOMER_REPORT_NAME));
+        csvReportGeneratorService.generatePurchaseByCustomerReport(purchaseByCustomerList);
 
         LOGGER.info(MessageFormat.format(Message.COLLECTING_DATA_FOR_REPORT.getMessage(), TOP_CUSTOMER_REPORT_NAME));
-        List<PurchaseByCustomerDetails> topCustomerList = reportDataProviderService.getDataForTopCustomerReport();
+        List<PurchaseByCustomer> topCustomerList = reportDataProviderService.getDataForTopCustomerReport();
         LOGGER.info(MessageFormat.format(Message.GENERATING_REPORT.getMessage(), TOP_CUSTOMER_REPORT_NAME));
         csvReportGeneratorService.generateTopCustomerReport(topCustomerList);
 

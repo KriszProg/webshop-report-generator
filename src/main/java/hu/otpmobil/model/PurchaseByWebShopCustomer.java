@@ -2,17 +2,17 @@ package hu.otpmobil.model;
 
 public class PurchaseByWebShopCustomer {
 
-    private Customer customer;
+    private WebShopCustomer webShopCustomer;
 
     private Integer totalPurchaseAmount;
 
-    public PurchaseByWebShopCustomer(Customer customer, Integer totalPurchaseAmount) {
-        this.customer = customer;
+    public PurchaseByWebShopCustomer(WebShopCustomer webShopCustomer, Integer totalPurchaseAmount) {
+        this.webShopCustomer = webShopCustomer;
         this.totalPurchaseAmount = totalPurchaseAmount;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public WebShopCustomer getWebShopCustomer() {
+        return webShopCustomer;
     }
 
     public Integer getTotalPurchaseAmount() {
@@ -22,7 +22,7 @@ public class PurchaseByWebShopCustomer {
     @Override
     public String toString() {
         return "PurchaseByWebShopCustomer{" +
-                "customer=" + customer +
+                "webShopCustomer=" + webShopCustomer +
                 ", totalPurchaseAmount=" + totalPurchaseAmount +
                 '}';
     }

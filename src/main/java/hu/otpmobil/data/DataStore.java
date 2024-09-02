@@ -1,7 +1,7 @@
 package hu.otpmobil.data;
 
-import hu.otpmobil.model.Customer;
-import hu.otpmobil.model.CustomerAndPayment;
+import hu.otpmobil.model.WebShopCustomer;
+import hu.otpmobil.model.WebShopCustomerAndPayment;
 import hu.otpmobil.model.Payment;
 import hu.otpmobil.model.UniqueId;
 
@@ -21,22 +21,18 @@ public class DataStore {
         return instance;
     }
 
-    private final List<Customer> customers = new ArrayList<>();
+    private final List<WebShopCustomer> webShopCustomers = new ArrayList<>();
 
     private final List<Payment> payments = new ArrayList<>();
 
     private DataStore() {}
 
-    public void saveCustomer(Customer customer) {
-        customers.add(customer);
+    public void saveWebShopCustomer(WebShopCustomer webShopCustomer) {
+        webShopCustomers.add(webShopCustomer);
     }
 
-    public List<Customer> getCustomers() {
-        return customers;
-    }
-
-    public boolean isCustomerExistsByUniqueId(UniqueId uniqueId) {
-        return customers.stream()
+    public boolean isWebShopCustomerExistsByUniqueId(UniqueId uniqueId) {
+        return webShopCustomers.stream()
                 .anyMatch(customer -> uniqueId.equals(customer.getUniqueId()));
     }
 
@@ -48,14 +44,20 @@ public class DataStore {
         return payments;
     }
 
-    public List<CustomerAndPayment> getCustomerAndPaymentList() {
-        Map<UniqueId, Customer> customerMap = customers.stream()
-                .collect(Collectors.toMap(Customer::getUniqueId, customer -> customer));
+    public List<WebShopCustomerAndPayment> getWebShopCustomerAndPaymentList() {
+        Map<UniqueId, WebShopCustomer> webShopCustomerMap = webShopCustomers.stream()
+                .collect(Collectors.toMap(WebShopCustomer::getUniqueId, webShopCustomer -> webShopCustomer));
 
         return payments.stream()
                 .map(payment -> {
-                    Customer customer = customerMap.get(payment.getUniqueId());
-                    return new CustomerAndPayment(customer.getUniqueId(), customer.getDetails(), payment.getDetails());
+                    WebShopCustomer webShopCustomer = webShopCustomerMap.get(payment.getUniqueId());
+                    return new WebShopCustomerAndPayment()
+                            .webShopCustomer(webShopCustomer)
+                            .paymentType(payment.getPaymentType())
+                            .paymentAmount(payment.getAmount())
+                            .bankAccountNumber(payment.getBankAccountNumber())
+                            .cardNumber(payment.getCardNumber())
+                            .paymentDate(payment.getDate());
                 })
                 .collect(Collectors.toList());
     }

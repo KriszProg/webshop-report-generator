@@ -3,7 +3,6 @@ package hu.otpmobil.service;
 import hu.otpmobil.data.DataStore;
 import hu.otpmobil.model.LineError;
 import hu.otpmobil.model.Payment;
-import hu.otpmobil.model.PaymentDetails;
 import hu.otpmobil.model.UniqueId;
 import hu.otpmobil.util.AppLogger;
 import hu.otpmobil.util.Message;
@@ -48,7 +47,7 @@ public class PaymentDataProcessorServiceImpl implements PaymentDataProcessorServ
                 }
 
                 Payment payment = createPayment(line, separator);
-                if (!dataStore.isCustomerExistsByUniqueId(payment.getUniqueId())) {
+                if (!dataStore.isWebShopCustomerExistsByUniqueId(payment.getUniqueId())) {
                     AppLogger.logLineError(LOGGER, new LineError()
                             .fileName(fileName)
                             .lineNumber(lineNumber)
@@ -76,12 +75,11 @@ public class PaymentDataProcessorServiceImpl implements PaymentDataProcessorServ
                 .uniqueId(new UniqueId()
                         .webShopId(data[0])
                         .customerId(data[1]))
-                .details(new PaymentDetails()
-                    .paymentType(data[2])
-                    .amount(Integer.valueOf(data[3]))
-                    .bankAccountNumber(data[4])
-                    .cardNumber(data[5])
-                    .date(LocalDate.parse(data[6], DATE_TIME_FORMATTER)));
+                .paymentType(data[2])
+                .amount(Integer.valueOf(data[3]))
+                .bankAccountNumber(data[4])
+                .cardNumber(data[5])
+                .date(LocalDate.parse(data[6], DATE_TIME_FORMATTER));
     }
 
     private void savePayment(Payment payment) {

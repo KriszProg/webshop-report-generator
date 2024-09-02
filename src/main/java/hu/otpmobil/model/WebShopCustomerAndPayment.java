@@ -3,31 +3,21 @@ package hu.otpmobil.model;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class CustomerAndPayment {
+public class WebShopCustomerAndPayment {
 
-    private UniqueId uniqueId;
-    private Customer customer;
+    private WebShopCustomer webShopCustomer;
     private String paymentType;
     private Integer paymentAmount;
     private String bankAccountNumber;
     private String cardNumber;
     private LocalDate paymentDate;
 
-    public UniqueId getUniqueId() {
-        return uniqueId;
+    public WebShopCustomer getWebShopCustomer() {
+        return webShopCustomer;
     }
 
-    public CustomerAndPayment uniqueId(UniqueId uniqueId) {
-        this.uniqueId = uniqueId;
-        return this;
-    }
-
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public CustomerAndPayment customer(Customer customer) {
-        this.customer = customer;
+    public WebShopCustomerAndPayment webShopCustomer(WebShopCustomer webShopCustomer) {
+        this.webShopCustomer = webShopCustomer;
         return this;
     }
 
@@ -35,7 +25,7 @@ public class CustomerAndPayment {
         return paymentType;
     }
 
-    public CustomerAndPayment paymentType(String paymentType) {
+    public WebShopCustomerAndPayment paymentType(String paymentType) {
         this.paymentType = paymentType;
         return this;
     }
@@ -44,7 +34,7 @@ public class CustomerAndPayment {
         return paymentAmount;
     }
 
-    public CustomerAndPayment paymentAmount(Integer paymentAmount) {
+    public WebShopCustomerAndPayment paymentAmount(Integer paymentAmount) {
         this.paymentAmount = paymentAmount;
         return this;
     }
@@ -53,7 +43,7 @@ public class CustomerAndPayment {
         return bankAccountNumber;
     }
 
-    public CustomerAndPayment bankAccountNumber(String bankAccountNumber) {
+    public WebShopCustomerAndPayment bankAccountNumber(String bankAccountNumber) {
         this.bankAccountNumber = bankAccountNumber;
         return this;
     }
@@ -62,7 +52,7 @@ public class CustomerAndPayment {
         return cardNumber;
     }
 
-    public CustomerAndPayment cardNumber(String cardNumber) {
+    public WebShopCustomerAndPayment cardNumber(String cardNumber) {
         this.cardNumber = cardNumber;
         return this;
     }
@@ -71,7 +61,7 @@ public class CustomerAndPayment {
         return paymentDate;
     }
 
-    public CustomerAndPayment paymentDate(LocalDate paymentDate) {
+    public WebShopCustomerAndPayment paymentDate(LocalDate paymentDate) {
         this.paymentDate = paymentDate;
         return this;
     }
@@ -80,9 +70,8 @@ public class CustomerAndPayment {
     public boolean equals(Object object) {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
-        CustomerAndPayment that = (CustomerAndPayment) object;
-        return Objects.equals(uniqueId, that.uniqueId)
-                && Objects.equals(customer, that.customer)
+        WebShopCustomerAndPayment that = (WebShopCustomerAndPayment) object;
+        return Objects.equals(webShopCustomer, that.webShopCustomer)
                 && Objects.equals(paymentType, that.paymentType)
                 && Objects.equals(paymentAmount, that.paymentAmount)
                 && Objects.equals(bankAccountNumber, that.bankAccountNumber)
@@ -92,14 +81,13 @@ public class CustomerAndPayment {
 
     @Override
     public int hashCode() {
-        return Objects.hash(uniqueId, customer, paymentType, paymentAmount, bankAccountNumber, cardNumber, paymentDate);
+        return Objects.hash(webShopCustomer, paymentType, paymentAmount, bankAccountNumber, cardNumber, paymentDate);
     }
 
     @Override
     public String toString() {
-        return "CustomerAndPayment{" +
-                "uniqueId=" + uniqueId +
-                ", customer=" + customer +
+        return "WebShopCustomerAndPayment{" +
+                "webShopCustomer=" + webShopCustomer +
                 ", paymentType='" + paymentType + '\'' +
                 ", paymentAmount=" + paymentAmount +
                 ", bankAccountNumber='" + bankAccountNumber + '\'' +

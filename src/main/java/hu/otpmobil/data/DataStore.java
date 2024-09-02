@@ -1,7 +1,7 @@
 package hu.otpmobil.data;
 
 import hu.otpmobil.model.WebShopCustomer;
-import hu.otpmobil.model.CustomerAndPayment;
+import hu.otpmobil.model.WebShopCustomerAndPayment;
 import hu.otpmobil.model.Payment;
 import hu.otpmobil.model.UniqueId;
 
@@ -31,10 +31,6 @@ public class DataStore {
         webShopCustomers.add(webShopCustomer);
     }
 
-    public List<WebShopCustomer> getWebShopCustomers() {
-        return webShopCustomers;
-    }
-
     public boolean isWebShopCustomerExistsByUniqueId(UniqueId uniqueId) {
         return webShopCustomers.stream()
                 .anyMatch(customer -> uniqueId.equals(customer.getUniqueId()));
@@ -48,16 +44,15 @@ public class DataStore {
         return payments;
     }
 
-    public List<CustomerAndPayment> getCustomerAndPaymentList() {
-        Map<UniqueId, WebShopCustomer> customerMap = webShopCustomers.stream()
-                .collect(Collectors.toMap(WebShopCustomer::getUniqueId, customer -> customer));
+    public List<WebShopCustomerAndPayment> getWebShopCustomerAndPaymentList() {
+        Map<UniqueId, WebShopCustomer> webShopCustomerMap = webShopCustomers.stream()
+                .collect(Collectors.toMap(WebShopCustomer::getUniqueId, webShopCustomer -> webShopCustomer));
 
         return payments.stream()
                 .map(payment -> {
-                    WebShopCustomer webShopCustomer = customerMap.get(payment.getUniqueId());
-                    return new CustomerAndPayment()
-                            .uniqueId(payment.getUniqueId())
-                            .customer(webShopCustomer.getCustomer())
+                    WebShopCustomer webShopCustomer = webShopCustomerMap.get(payment.getUniqueId());
+                    return new WebShopCustomerAndPayment()
+                            .webShopCustomer(webShopCustomer)
                             .paymentType(payment.getPaymentType())
                             .paymentAmount(payment.getAmount())
                             .bankAccountNumber(payment.getBankAccountNumber())

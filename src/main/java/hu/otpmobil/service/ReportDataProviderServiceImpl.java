@@ -15,6 +15,7 @@ import static hu.otpmobil.config.ApplicationConstants.NUMBER_OF_TOP_LIST_ELEMENT
 public class ReportDataProviderServiceImpl implements ReportDataProviderService {
 
     private final DataStore dataStore;
+    private List<WebShopCustomerAndPayment> webShopCustomerAndPaymentList = new ArrayList<>();
     private List<PurchaseByCustomer> purchaseByCustomerList = new ArrayList<>();
 
     public ReportDataProviderServiceImpl() {
@@ -67,22 +68,14 @@ public class ReportDataProviderServiceImpl implements ReportDataProviderService 
 
     @Override
     public List<PurchaseByWebShopCustomer> getDataForPurchaseByWebShopCustomerReport() {
-        Map<UniqueId, WebShopCustomer> webShopCustomerMap = dataStore.getWebShopCustomers().stream()
-                .collect(Collectors.toMap(WebShopCustomer::getUniqueId, customer -> customer));
-
-        return dataStore.getPayments().stream()
+        initWebShopCustomerAndPaymentListIfEmpty();
+        return webShopCustomerAndPaymentList.stream()
                 .collect(Collectors.groupingBy(
-                        Payment::getUniqueId,
-                        Collectors.summingInt(Payment::getAmount)
-                ))
+                        WebShopCustomerAndPayment::getWebShopCustomer,
+                        Collectors.summingInt(WebShopCustomerAndPayment::getPaymentAmount))
+                )
                 .entrySet().stream()
-                .map(entry -> {
-                    WebShopCustomer webShopCustomer = webShopCustomerMap.get(entry.getKey());
-                    return new PurchaseByWebShopCustomer(
-                            webShopCustomer,
-                            entry.getValue()
-                    );
-                })
+                .map(entry -> new PurchaseByWebShopCustomer(entry.getKey(), entry.getValue()))
                 .sorted(Comparator
                         .comparing((PurchaseByWebShopCustomer item) -> item.getWebShopCustomer().getCustomer().getName())
                         .thenComparing(item -> item.getWebShopCustomer().getUniqueId().getWebShopId())
@@ -92,15 +85,20 @@ public class ReportDataProviderServiceImpl implements ReportDataProviderService 
 
     private void initPurchaseByCustomerListIfEmpty() {
         if (purchaseByCustomerList.isEmpty()) {
-            purchaseByCustomerList = dataStore.getCustomerAndPaymentList().stream()
+            initWebShopCustomerAndPaymentListIfEmpty();
+            purchaseByCustomerList = webShopCustomerAndPaymentList.stream()
                     .collect(Collectors.groupingBy(
-                            CustomerAndPayment::getCustomer,
-                            Collectors.summingInt(CustomerAndPayment::getPaymentAmount)
+                            webShopCustomerAndPayment -> webShopCustomerAndPayment.getWebShopCustomer().getCustomer(),
+                            Collectors.summingInt(WebShopCustomerAndPayment::getPaymentAmount)
                     ))
                     .entrySet().stream()
                     .map(entry -> new PurchaseByCustomer(entry.getKey(), entry.getValue()))
                     .collect(Collectors.toList());
         }
+    }
+
+    private void initWebShopCustomerAndPaymentListIfEmpty() {
+        webShopCustomerAndPaymentList = dataStore.getWebShopCustomerAndPaymentList();
     }
 
     private List<PurchaseByCustomer> getPurchaseByCustomerListSortedByTotalAmount(SortDirection direction) {

@@ -29,6 +29,30 @@ public class ReportDataProviderServiceImpl implements ReportDataProviderService 
     }
 
     @Override
+    public List<PurchaseByCustomerPerYear> getDataForPurchaseByCustomerPerYearReport() {
+        initWebShopCustomerAndPaymentListIfEmpty();
+        return webShopCustomerAndPaymentList.stream()
+                .collect(Collectors.groupingBy(
+                                webShopCustomerAndPayment -> webShopCustomerAndPayment.getPaymentDate().getYear(),
+                                Collectors.groupingBy(
+                                        webShopCustomerAndPayment -> webShopCustomerAndPayment.getWebShopCustomer().getCustomer(),
+                                        Collectors.summingInt(WebShopCustomerAndPayment::getPaymentAmount))
+                        )
+                )
+                .entrySet().stream()
+                .flatMap(yearEntry -> yearEntry.getValue().entrySet().stream()
+                        .map(customerEntry ->
+                                new PurchaseByCustomerPerYear(yearEntry.getKey(), customerEntry.getKey(), customerEntry.getValue())
+                        )
+                        .sorted(Comparator
+                                .comparing(PurchaseByCustomerPerYear::getYear)
+                                .thenComparing(PurchaseByCustomerPerYear::getTotalPurchaseAmount).reversed()
+                        )
+                )
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<PurchaseByCustomer> getDataForTopCustomerReport() {
         initPurchaseByCustomerListIfEmpty();
         List<PurchaseByCustomer> sortedList = getPurchaseByCustomerListSortedByTotalAmount(SortDirection.DESC);
@@ -79,6 +103,35 @@ public class ReportDataProviderServiceImpl implements ReportDataProviderService 
                 .sorted(Comparator
                         .comparing((PurchaseByWebShopCustomer item) -> item.getWebShopCustomer().getCustomer().getName())
                         .thenComparing(item -> item.getWebShopCustomer().getUniqueId().getWebShopId())
+                )
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PurchaseByWebShopCustomerPerYear> getDataForPurchaseByWebShopCustomerPerYearReport() {
+        initWebShopCustomerAndPaymentListIfEmpty();
+        return webShopCustomerAndPaymentList.stream()
+                .collect(Collectors.groupingBy(
+                        webShopCustomerAndPayment -> webShopCustomerAndPayment.getPaymentDate().getYear(),
+                        Collectors.groupingBy(
+                                WebShopCustomerAndPayment::getWebShopCustomer,
+                                Collectors.summingInt(WebShopCustomerAndPayment::getPaymentAmount))
+                        )
+                )
+                .entrySet().stream()
+                .flatMap(yearEntry -> yearEntry.getValue().entrySet().stream()
+                        .map(webShopCustomerEntry ->
+                                new PurchaseByWebShopCustomerPerYear(yearEntry.getKey(),
+                                        webShopCustomerEntry.getKey(),
+                                        webShopCustomerEntry.getValue())
+                        )
+                        .sorted(Comparator
+                                .comparing(PurchaseByWebShopCustomerPerYear::getYear)
+                                .thenComparing(purchaseByWebShopCustomerPerYear ->
+                                        purchaseByWebShopCustomerPerYear.getWebShopCustomer().getCustomer().getName())
+                                .thenComparing(purchaseByWebShopCustomerPerYear ->
+                                        purchaseByWebShopCustomerPerYear.getWebShopCustomer().getUniqueId().getWebShopId())
+                        )
                 )
                 .collect(Collectors.toList());
     }

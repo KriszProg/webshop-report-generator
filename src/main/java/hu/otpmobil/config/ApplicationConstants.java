@@ -21,9 +21,15 @@ public final class ApplicationConstants {
     public static final String[] PURCHASE_BY_CUSTOMER_REPORT_HEADER = {"NAME", "ADDRESS", "vásárlás összesen"};
     public static final String PURCHASE_BY_CUSTOMER_REPORT_NAME = "report01.csv";
     public static final String PURCHASE_BY_CUSTOMER_REPORT_FULL_PATH = REPORT_BASE_PATH + PURCHASE_BY_CUSTOMER_REPORT_NAME;
+    public static final String[] PURCHASE_BY_CUSTOMER_PER_YEAR_REPORT_HEADER = {"YEAR", "NAME", "ADDRESS", "vásárlás összesen"};
+    public static final String PURCHASE_BY_CUSTOMER_REPORT_PER_YEAR_NAME = "report01_per_year.csv";
+    public static final String PURCHASE_BY_CUSTOMER_REPORT_PER_YEAR_FULL_PATH = REPORT_BASE_PATH + PURCHASE_BY_CUSTOMER_REPORT_PER_YEAR_NAME;
     public static final String[] PURCHASE_BY_WEB_SHOP_CUSTOMER_REPORT_HEADER = {"WEBSHOP_ID", "CUSOMER_ID", "NAME", "ADDRESS", "vásárlás összesen"};
     public static final String PURCHASE_BY_WEB_SHOP_CUSTOMER_REPORT_NAME = "report03.csv";
     public static final String PURCHASE_BY_WEB_SHOP_CUSTOMER_REPORT_FULL_PATH = REPORT_BASE_PATH + PURCHASE_BY_WEB_SHOP_CUSTOMER_REPORT_NAME;
+    public static final String[] PURCHASE_BY_WEB_SHOP_CUSTOMER_PER_YEAR_REPORT_HEADER = {"YEAR", "WEBSHOP_ID", "CUSOMER_ID", "NAME", "ADDRESS", "vásárlás összesen"};
+    public static final String PURCHASE_BY_WEB_SHOP_CUSTOMER_PER_YEAR_REPORT_NAME = "report03_per_year.csv";
+    public static final String PURCHASE_BY_WEB_SHOP_CUSTOMER_PER_YEAR_REPORT_FULL_PATH = REPORT_BASE_PATH + PURCHASE_BY_WEB_SHOP_CUSTOMER_PER_YEAR_REPORT_NAME;
     public static final String[] TOP_CUSTOMER_REPORT_HEADER = PURCHASE_BY_CUSTOMER_REPORT_HEADER;
     public static final String TOP_CUSTOMER_REPORT_NAME = "top.csv";
     public static final String TOP_CUSTOMER_REPORT_FULL_PATH = REPORT_BASE_PATH + TOP_CUSTOMER_REPORT_NAME;

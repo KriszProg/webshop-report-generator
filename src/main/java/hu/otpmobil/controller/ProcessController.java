@@ -1,8 +1,6 @@
 package hu.otpmobil.controller;
 
-import hu.otpmobil.model.PurchaseByCustomer;
-import hu.otpmobil.model.PurchaseByWebShopCustomer;
-import hu.otpmobil.model.WebShopSales;
+import hu.otpmobil.model.*;
 import hu.otpmobil.service.*;
 import hu.otpmobil.util.Message;
 import hu.otpmobil.util.Separator;
@@ -68,6 +66,11 @@ public class ProcessController {
         LOGGER.info(MessageFormat.format(Message.GENERATING_REPORT.getMessage(), PURCHASE_BY_CUSTOMER_REPORT_NAME));
         csvReportGeneratorService.generatePurchaseByCustomerReport(purchaseByCustomerList);
 
+        LOGGER.info(MessageFormat.format(Message.COLLECTING_DATA_FOR_REPORT.getMessage(), PURCHASE_BY_CUSTOMER_REPORT_PER_YEAR_NAME));
+        List<PurchaseByCustomerPerYear> purchaseByCustomerPerYearList = reportDataProviderService.getDataForPurchaseByCustomerPerYearReport();
+        LOGGER.info(MessageFormat.format(Message.GENERATING_REPORT.getMessage(), PURCHASE_BY_CUSTOMER_REPORT_PER_YEAR_NAME));
+        csvReportGeneratorService.generatePurchaseByCustomerPerYearReport(purchaseByCustomerPerYearList);
+
         LOGGER.info(MessageFormat.format(Message.COLLECTING_DATA_FOR_REPORT.getMessage(), TOP_CUSTOMER_REPORT_NAME));
         List<PurchaseByCustomer> topCustomerList = reportDataProviderService.getDataForTopCustomerReport();
         LOGGER.info(MessageFormat.format(Message.GENERATING_REPORT.getMessage(), TOP_CUSTOMER_REPORT_NAME));
@@ -82,6 +85,11 @@ public class ProcessController {
         List<PurchaseByWebShopCustomer> purchaseByWebShopCustomerList = reportDataProviderService.getDataForPurchaseByWebShopCustomerReport();
         LOGGER.info(MessageFormat.format(Message.GENERATING_REPORT.getMessage(), PURCHASE_BY_WEB_SHOP_CUSTOMER_REPORT_NAME));
         csvReportGeneratorService.generatePurchaseByWebShopCustomerReport(purchaseByWebShopCustomerList);
+
+        LOGGER.info(MessageFormat.format(Message.COLLECTING_DATA_FOR_REPORT.getMessage(), PURCHASE_BY_WEB_SHOP_CUSTOMER_PER_YEAR_REPORT_NAME));
+        List<PurchaseByWebShopCustomerPerYear> purchaseByWebShopCustomerPerYearList = reportDataProviderService.getDataForPurchaseByWebShopCustomerPerYearReport();
+        LOGGER.info(MessageFormat.format(Message.GENERATING_REPORT.getMessage(), PURCHASE_BY_WEB_SHOP_CUSTOMER_PER_YEAR_REPORT_NAME));
+        csvReportGeneratorService.generatePurchaseByWebShopCustomerPerYearReport(purchaseByWebShopCustomerPerYearList);
     }
 
     private void initFilePathForCustomerData() {

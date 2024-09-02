@@ -29,6 +29,22 @@ public class CsvReportGeneratorServiceImpl implements CsvReportGeneratorService 
     }
 
     @Override
+    public void generatePurchaseByCustomerPerYearReport(List<PurchaseByCustomerPerYear> purchaseByCustomerPerYearList) {
+        File file = new File(PURCHASE_BY_CUSTOMER_REPORT_PER_YEAR_FULL_PATH);
+
+        try (CSVPrinter csvPrinter = getCSVPrinter(file.getPath(), PURCHASE_BY_CUSTOMER_PER_YEAR_REPORT_HEADER)) {
+            for (PurchaseByCustomerPerYear purchase : purchaseByCustomerPerYearList) {
+                Customer customer = purchase.getCustomer();
+                csvPrinter.printRecord(purchase.getYear(), customer.getName(), customer.getAddress(),
+                        purchase.getTotalPurchaseAmount());
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public void generateTopCustomerReport(List<PurchaseByCustomer> topCustomerList) {
         File file = new File(TOP_CUSTOMER_REPORT_FULL_PATH);
 
@@ -68,6 +84,23 @@ public class CsvReportGeneratorServiceImpl implements CsvReportGeneratorService 
                 Customer customer = purchase.getWebShopCustomer().getCustomer();
                 csvPrinter.printRecord(uniqueId.getWebShopId(), uniqueId.getCustomerId(), customer.getName(),
                         customer.getAddress(), purchase.getTotalPurchaseAmount());
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void generatePurchaseByWebShopCustomerPerYearReport(List<PurchaseByWebShopCustomerPerYear> purchaseByWebShopCustomerPerYearList) {
+        File file = new File(PURCHASE_BY_WEB_SHOP_CUSTOMER_PER_YEAR_REPORT_FULL_PATH);
+
+        try (CSVPrinter csvPrinter = getCSVPrinter(file.getPath(), PURCHASE_BY_WEB_SHOP_CUSTOMER_PER_YEAR_REPORT_HEADER)) {
+            for (PurchaseByWebShopCustomerPerYear purchase : purchaseByWebShopCustomerPerYearList) {
+                WebShopCustomer webShopCustomer = purchase.getWebShopCustomer();
+                csvPrinter.printRecord(purchase.getYear(), webShopCustomer.getUniqueId().getWebShopId(),
+                        webShopCustomer.getUniqueId().getCustomerId(), webShopCustomer.getCustomer().getName(),
+                        webShopCustomer.getCustomer().getAddress(), purchase.getTotalPurchaseAmount());
             }
 
         } catch (IOException e) {
